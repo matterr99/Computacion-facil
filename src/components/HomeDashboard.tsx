@@ -10,11 +10,9 @@ import {
   Sparkles, 
   Award, 
   BookOpen, 
-  Gamepad2,
-  Heart,
-  Clock,
-  HardDrive,
-  Monitor
+  Gamepad2, 
+  Clock, 
+  Laptop
 } from 'lucide-react';
 import { MODULES } from '../data/modulesData';
 import { ModuleProgress } from '../types';
@@ -36,13 +34,16 @@ export const HomeDashboard: React.FC<Props> = ({
   onNavigate,
   userName
 }) => {
-  const { playClickSound } = useAccessibility();
+  const { playClickSound, theme } = useAccessibility();
+  const isDark = theme === 'dark';
 
   const getModuleIcon = (iconName: string) => {
     switch (iconName) {
+      case 'Laptop':
+        return <Laptop className="w-8 h-8 sm:w-10 sm:h-10 text-blue-500" />;
       case 'MousePointerClick':
         return (
-          <div className="w-10 h-10 grid grid-cols-2 gap-0.5">
+          <div className="w-8 h-8 sm:w-10 sm:h-10 grid grid-cols-2 gap-0.5">
             <div className="bg-sky-500 rounded-xs"></div>
             <div className="bg-sky-500 rounded-xs"></div>
             <div className="bg-sky-500 rounded-xs"></div>
@@ -50,30 +51,30 @@ export const HomeDashboard: React.FC<Props> = ({
           </div>
         );
       case 'Search':
-        return <Search className="w-9 h-9 text-amber-500" />;
+        return <Search className="w-8 h-8 sm:w-10 sm:h-10 text-amber-500" />;
       case 'Globe':
-        return <Globe className="w-9 h-9 text-sky-500" />;
+        return <Globe className="w-8 h-8 sm:w-10 sm:h-10 text-sky-500" />;
       case 'Mail':
-        return <Mail className="w-9 h-9 text-blue-600" />;
+        return <Mail className="w-8 h-8 sm:w-10 sm:h-10 text-blue-600" />;
       case 'ShieldCheck':
-        return <ShieldCheck className="w-9 h-9 text-emerald-600" />;
+        return <ShieldCheck className="w-8 h-8 sm:w-10 sm:h-10 text-emerald-600" />;
       default:
-        return <Sparkles className="w-9 h-9 text-indigo-600" />;
+        return <Sparkles className="w-8 h-8 sm:w-10 sm:h-10 text-indigo-600" />;
     }
   };
 
   const completedModulesCount = Object.values(modulesProgress).filter(m => m.isCompleted).length;
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-6 space-y-8">
+    <div className="max-w-6xl mx-auto px-3 sm:px-6 py-4 sm:py-6 space-y-6 sm:space-y-8">
       
-      {/* Windows 11 Desktop Style Banner */}
-      <div className="bg-gradient-to-r from-blue-700 via-indigo-800 to-slate-900 text-white rounded-3xl p-6 sm:p-10 shadow-2xl relative overflow-hidden border-4 border-blue-400/40">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-sky-400/20 rounded-full blur-3xl pointer-events-none" />
+      {/* Windows 11 Desktop Style Banner - Fully Responsive */}
+      <div className="bg-gradient-to-r from-blue-700 via-indigo-800 to-slate-900 text-white rounded-2xl sm:rounded-3xl p-5 sm:p-8 lg:p-10 shadow-2xl relative overflow-hidden border-2 sm:border-4 border-blue-400/40">
+        <div className="absolute top-0 right-0 w-80 h-80 bg-sky-400/20 rounded-full blur-3xl pointer-events-none" />
         
-        <div className="relative z-10 max-w-3xl space-y-4">
-          <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-md border border-white/30 text-white px-4 py-1.5 rounded-full text-sm font-black uppercase tracking-wider">
-            <div className="w-4 h-4 grid grid-cols-2 gap-0.5">
+        <div className="relative z-10 max-w-3xl space-y-3 sm:space-y-4">
+          <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-md border border-white/30 text-white px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider">
+            <div className="w-3.5 h-3.5 grid grid-cols-2 gap-0.5">
               <div className="bg-sky-300 rounded-xs"></div>
               <div className="bg-sky-300 rounded-xs"></div>
               <div className="bg-sky-300 rounded-xs"></div>
@@ -82,20 +83,20 @@ export const HomeDashboard: React.FC<Props> = ({
             <span>Aprende Windows 11 para Papá</span>
           </div>
 
-          <h1 className="text-3xl sm:text-5xl font-black tracking-tight text-white">
+          <h1 className="text-2xl sm:text-4xl lg:text-5xl font-black tracking-tight text-white">
             ¡Hola, {userName || 'Papá'}! 👋
           </h1>
 
-          <p className="text-blue-100 text-lg sm:text-2xl font-medium leading-relaxed">
+          <p className="text-blue-100 text-base sm:text-xl lg:text-2xl font-medium leading-relaxed">
             Tu curso interactivo de computación con el diseño real de Windows. Aprende a tu ritmo, sin prisas y con total seguridad.
           </p>
 
-          <div className="pt-2 flex flex-wrap items-center gap-4">
+          <div className="pt-2 flex flex-wrap items-center gap-3">
             <SpeechReaderButton
-              textToRead={`¡Hola! Bienvenido a tu curso de computación con estilo Windows. Aquí aprenderás a usar el ratón, el menú inicio, el explorador de archivos, el navegador Edge, el correo y la seguridad de Windows. Selecciona la primera lección para comenzar.`}
-              label="Escuchar bienvenida en voz alta"
+              textToRead={`¡Hola! Bienvenido a tu curso de computación con estilo Windows. Aquí aprenderás a usar la computadora, el ratón, el menú inicio, el explorador de archivos, los navegadores Edge y Chrome, el correo y la seguridad digital. Selecciona la primera lección para comenzar.`}
+              label="Escuchar bienvenida"
               size="large"
-              className="bg-amber-400 text-slate-950 hover:bg-amber-300 border-none"
+              className="bg-amber-400 text-slate-950 hover:bg-amber-300 border-none text-sm sm:text-base"
             />
           </div>
         </div>
@@ -120,24 +121,26 @@ export const HomeDashboard: React.FC<Props> = ({
           </div>
         }
       >
-        <div className="space-y-6">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b-2 border-slate-200 pb-4">
+        <div className="space-y-4 sm:space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b-2 border-slate-200 dark:border-slate-700 pb-3 sm:pb-4">
             <div>
-              <h2 className="text-2xl sm:text-3xl font-black text-slate-900">
+              <h2 className={`text-xl sm:text-2xl lg:text-3xl font-black ${isDark ? 'text-white' : 'text-slate-900'}`}>
                 Tus Lecciones de Windows
               </h2>
-              <p className="text-slate-600 text-base sm:text-lg font-medium">
-                Aprende las funciones esenciales del sistema operativo con simuladores reales.
+              <p className={`text-xs sm:text-base font-medium ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
+                Aprende las funciones esenciales del sistema con simuladores interactivos.
               </p>
             </div>
 
-            <div className="bg-blue-50 border-2 border-blue-200 px-4 py-2 rounded-2xl text-blue-950 font-bold text-sm sm:text-base">
+            <div className={`px-3 py-1.5 rounded-xl font-bold text-xs sm:text-sm w-fit border ${
+              isDark ? 'bg-blue-950/60 text-blue-300 border-blue-800' : 'bg-blue-50 text-blue-950 border-blue-200'
+            }`}>
               🏆 {completedModulesCount} de {MODULES.length} lecciones listas
             </div>
           </div>
 
-          {/* Modules Grid */}
-          <div className="grid grid-cols-1 gap-6">
+          {/* Modules Grid - Responsive Stack */}
+          <div className="grid grid-cols-1 gap-4 sm:gap-6">
             {MODULES.map((module) => {
               const progress = modulesProgress[module.id];
               const isDone = progress?.isCompleted;
@@ -146,51 +149,57 @@ export const HomeDashboard: React.FC<Props> = ({
               return (
                 <div
                   key={module.id}
-                  className={`bg-white rounded-3xl p-6 sm:p-8 border-3 transition-all duration-200 shadow-sm hover:shadow-lg flex flex-col md:flex-row items-start md:items-center justify-between gap-6 ${
+                  className={`rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-7 border-2 sm:border-3 transition-all duration-200 shadow-sm hover:shadow-md flex flex-col md:flex-row items-start md:items-center justify-between gap-4 sm:gap-6 ${
                     isDone
-                      ? 'border-emerald-400 bg-emerald-50/20'
-                      : 'border-slate-200 hover:border-blue-400'
+                      ? isDark
+                        ? 'border-emerald-700 bg-emerald-950/20'
+                        : 'border-emerald-400 bg-emerald-50/20'
+                      : isDark
+                      ? 'border-slate-700 bg-slate-800/60 hover:border-blue-500'
+                      : 'border-slate-200 bg-white hover:border-blue-400'
                   }`}
                 >
-                  <div className="flex items-start gap-5">
-                    <div className={`w-16 h-16 sm:w-20 sm:h-20 rounded-3xl flex items-center justify-center flex-shrink-0 shadow-inner border-2 ${
+                  <div className="flex items-start gap-3 sm:gap-5 min-w-0">
+                    <div className={`w-14 h-14 sm:w-16 sm:h-16 lg:w-20 lg:h-20 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-inner border-2 ${
                       isDone
-                        ? 'bg-emerald-100 border-emerald-300'
-                        : 'bg-blue-50 border-blue-200'
+                        ? isDark ? 'bg-emerald-900/60 border-emerald-600' : 'bg-emerald-100 border-emerald-300'
+                        : isDark ? 'bg-slate-700/60 border-slate-600' : 'bg-blue-50 border-blue-200'
                     }`}>
                       {getModuleIcon(module.iconName)}
                     </div>
 
-                    <div className="space-y-1.5">
-                      <div className="flex flex-wrap items-center gap-2">
-                        <span className="text-xs font-black px-3 py-1 rounded-full bg-slate-100 text-slate-700 border border-slate-300">
+                    <div className="space-y-1 min-w-0">
+                      <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+                        <span className={`text-[10px] sm:text-xs font-black px-2.5 py-0.5 rounded-full border ${
+                          isDark ? 'bg-slate-800 text-slate-300 border-slate-700' : 'bg-slate-100 text-slate-700 border-slate-300'
+                        }`}>
                           Módulo {module.number}
                         </span>
-                        <span className="text-xs font-black px-3 py-1 rounded-full bg-amber-100 text-amber-900 border border-amber-300">
+                        <span className="text-[10px] sm:text-xs font-black px-2.5 py-0.5 rounded-full bg-amber-400/20 text-amber-500 border border-amber-400/40">
                           {module.badge}
                         </span>
-                        <span className="text-xs font-bold text-slate-500 flex items-center gap-1">
-                          <Clock className="w-3.5 h-3.5" />
+                        <span className="text-[10px] sm:text-xs font-bold text-slate-400 flex items-center gap-1">
+                          <Clock className="w-3 h-3" />
                           {module.estimatedMinutes} min
                         </span>
                       </div>
 
-                      <h3 className="text-2xl sm:text-3xl font-black text-slate-900">
+                      <h3 className={`text-lg sm:text-2xl lg:text-3xl font-black truncate leading-snug ${isDark ? 'text-white' : 'text-slate-900'}`}>
                         {module.title}
                       </h3>
 
-                      <p className="text-slate-600 text-base sm:text-lg font-medium max-w-2xl leading-relaxed">
+                      <p className={`text-xs sm:text-base font-medium leading-relaxed line-clamp-2 sm:line-clamp-none ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>
                         {module.shortDescription}
                       </p>
 
-                      <div className="pt-2 text-sm font-bold text-slate-500">
+                      <div className="pt-1 text-xs sm:text-sm font-bold">
                         {isDone ? (
-                          <span className="text-emerald-700 flex items-center gap-1 font-extrabold">
+                          <span className="text-emerald-500 flex items-center gap-1 font-extrabold">
                             <CheckCircle2 className="w-4 h-4 stroke-[3]" />
-                            ¡Lección completada en Windows!
+                            ¡Lección completada!
                           </span>
                         ) : (
-                          <span>
+                          <span className={isDark ? 'text-slate-400' : 'text-slate-500'}>
                             {completedStepsCount > 0
                               ? `Paso ${completedStepsCount} de ${module.steps.length} completado`
                               : `${module.steps.length} pasos sencillos`}
@@ -200,20 +209,20 @@ export const HomeDashboard: React.FC<Props> = ({
                     </div>
                   </div>
 
-                  <div className="w-full md:w-auto flex flex-col sm:flex-row gap-3">
+                  <div className="w-full md:w-auto flex-shrink-0">
                     <button
                       onClick={() => {
                         playClickSound();
                         onSelectModule(module.id);
                       }}
-                      className={`w-full md:w-auto px-8 py-4 rounded-2xl font-black text-lg sm:text-xl flex items-center justify-center gap-3 transition-all cursor-pointer shadow-md active:scale-95 ${
+                      className={`w-full md:w-auto px-6 sm:px-8 py-3 sm:py-3.5 rounded-xl sm:rounded-2xl font-black text-sm sm:text-lg flex items-center justify-center gap-2 transition-all cursor-pointer shadow-md active:scale-95 ${
                         isDone
                           ? 'bg-emerald-600 hover:bg-emerald-700 text-white'
                           : 'bg-blue-600 hover:bg-blue-700 text-white'
                       }`}
                     >
-                      <span>{isDone ? 'Repasar lección' : completedStepsCount > 0 ? 'Continuar' : 'Empezar'}</span>
-                      <ArrowRight className="w-6 h-6 stroke-[3]" />
+                      <span>{isDone ? 'Repasar' : completedStepsCount > 0 ? 'Continuar' : 'Empezar'}</span>
+                      <ArrowRight className="w-5 h-5 stroke-[3]" />
                     </button>
                   </div>
                 </div>
@@ -223,26 +232,28 @@ export const HomeDashboard: React.FC<Props> = ({
         </div>
       </WindowsWindow>
 
-      {/* Windows Quick Tools Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-2">
+      {/* Windows Quick Tools Cards - Responsive 1 to 3 cols */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 pt-2">
         {/* Glossary */}
         <div
           onClick={() => {
             playClickSound();
             onNavigate('glossary');
           }}
-          className="bg-white p-6 rounded-3xl border-2 border-slate-200 hover:border-indigo-400 shadow-xs hover:shadow-md transition-all cursor-pointer group"
+          className={`p-5 sm:p-6 rounded-2xl sm:rounded-3xl border-2 transition-all cursor-pointer group shadow-xs hover:shadow-md ${
+            isDark ? 'bg-slate-900 border-slate-700 hover:border-indigo-500' : 'bg-white border-slate-200 hover:border-indigo-400'
+          }`}
         >
-          <div className="w-14 h-14 rounded-2xl bg-indigo-100 text-indigo-700 flex items-center justify-center mb-4 group-hover:scale-105 transition-transform">
-            <BookOpen className="w-8 h-8" />
+          <div className="w-12 h-12 rounded-2xl bg-indigo-100 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 flex items-center justify-center mb-3 group-hover:scale-105 transition-transform">
+            <BookOpen className="w-6 h-6" />
           </div>
-          <h4 className="text-xl font-extrabold text-slate-900 mb-1">
+          <h4 className={`text-lg sm:text-xl font-extrabold mb-1 ${isDark ? 'text-white' : 'text-slate-900'}`}>
             Glosario de Windows
           </h4>
-          <p className="text-slate-600 text-sm font-medium mb-3">
-            Consulta palabras técnicas explicadas con cosas cotidianas de la vida.
+          <p className={`text-xs sm:text-sm font-medium mb-2.5 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
+            Palabras técnicas explicadas con cosas cotidianas de la vida.
           </p>
-          <span className="text-indigo-600 font-bold text-sm group-hover:underline">
+          <span className="text-indigo-500 font-bold text-xs sm:text-sm group-hover:underline">
             Ver diccionario fácil →
           </span>
         </div>
@@ -253,18 +264,20 @@ export const HomeDashboard: React.FC<Props> = ({
             playClickSound();
             onNavigate('playground');
           }}
-          className="bg-white p-6 rounded-3xl border-2 border-slate-200 hover:border-purple-400 shadow-xs hover:shadow-md transition-all cursor-pointer group"
+          className={`p-5 sm:p-6 rounded-2xl sm:rounded-3xl border-2 transition-all cursor-pointer group shadow-xs hover:shadow-md ${
+            isDark ? 'bg-slate-900 border-slate-700 hover:border-purple-500' : 'bg-white border-slate-200 hover:border-purple-400'
+          }`}
         >
-          <div className="w-14 h-14 rounded-2xl bg-purple-100 text-purple-700 flex items-center justify-center mb-4 group-hover:scale-105 transition-transform">
-            <Gamepad2 className="w-8 h-8" />
+          <div className="w-12 h-12 rounded-2xl bg-purple-100 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 flex items-center justify-center mb-3 group-hover:scale-105 transition-transform">
+            <Gamepad2 className="w-6 h-6" />
           </div>
-          <h4 className="text-xl font-extrabold text-slate-900 mb-1">
-            Escritorio Libre de Windows
+          <h4 className={`text-lg sm:text-xl font-extrabold mb-1 ${isDark ? 'text-white' : 'text-slate-900'}`}>
+            Escritorio Libre
           </h4>
-          <p className="text-slate-600 text-sm font-medium mb-3">
-            Abre la calculadora, escribe en el bloc de notas y busca en el navegador sin límites.
+          <p className={`text-xs sm:text-sm font-medium mb-2.5 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
+            Calculadora, bloc de notas y navegador simulado sin límites.
           </p>
-          <span className="text-purple-600 font-bold text-sm group-hover:underline">
+          <span className="text-purple-500 font-bold text-xs sm:text-sm group-hover:underline">
             Abrir escritorio virtual →
           </span>
         </div>
@@ -275,18 +288,22 @@ export const HomeDashboard: React.FC<Props> = ({
             playClickSound();
             onNavigate('certificate');
           }}
-          className="bg-gradient-to-br from-amber-50 to-amber-100 p-6 rounded-3xl border-2 border-amber-300 hover:border-amber-500 shadow-xs hover:shadow-md transition-all cursor-pointer group"
+          className={`p-5 sm:p-6 rounded-2xl sm:rounded-3xl border-2 transition-all cursor-pointer group shadow-xs hover:shadow-md sm:col-span-2 md:col-span-1 ${
+            isDark 
+              ? 'bg-slate-900 border-amber-500/40 hover:border-amber-400' 
+              : 'bg-gradient-to-br from-amber-50 to-amber-100 border-amber-300 hover:border-amber-500'
+          }`}
         >
-          <div className="w-14 h-14 rounded-2xl bg-amber-200 text-amber-900 flex items-center justify-center mb-4 group-hover:scale-105 transition-transform">
-            <Award className="w-8 h-8 text-amber-700" />
+          <div className="w-12 h-12 rounded-2xl bg-amber-400/20 text-amber-500 flex items-center justify-center mb-3 group-hover:scale-105 transition-transform">
+            <Award className="w-6 h-6 text-amber-500" />
           </div>
-          <h4 className="text-xl font-extrabold text-slate-900 mb-1">
-            Diploma Oficial de Windows
+          <h4 className={`text-lg sm:text-xl font-extrabold mb-1 ${isDark ? 'text-white' : 'text-slate-900'}`}>
+            Diploma Oficial
           </h4>
-          <p className="text-slate-700 text-sm font-medium mb-3">
+          <p className={`text-xs sm:text-sm font-medium mb-2.5 ${isDark ? 'text-slate-400' : 'text-slate-700'}`}>
             Revisa e imprime tu diploma conmemorativo para celebrar tu logro.
           </p>
-          <span className="text-amber-900 font-black text-sm group-hover:underline">
+          <span className="text-amber-500 font-black text-xs sm:text-sm group-hover:underline">
             Ver mi diploma →
           </span>
         </div>
