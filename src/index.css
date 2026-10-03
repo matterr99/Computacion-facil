@@ -1,0 +1,40 @@
+@import "tailwindcss";
+
+@layer base {
+  body {
+    font-family: 'Lexend', 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    letter-spacing: -0.01em;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Focus visible styles for high accessibility */
+  button:focus-visible,
+  a:focus-visible,
+  input:focus-visible {
+    outline: 4px solid #f59e0b;
+    outline-offset: 3px;
+  }
+}
+
+/* Accessible text size scaling classes controlled via state */
+.text-scale-normal {
+  font-size: 1rem;
+}
+
+.text-scale-large {
+  font-size: 1.15rem;
+}
+
+.text-scale-xl {
+  font-size: 1.3rem;
+}
+
+/* Soft animations */
+@keyframes gentle-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.04); }
+}
+
+.animate-gentle-pulse {
+  animation: gentle-pulse 2.5s infinite ease-in-out;
+}

@@ -1,0 +1,6 @@
+{
+  "name": "Aprende Computación Fácil - Guía para Papá",
+  "description": "Aplicación interactiva y accesible en español diseñada para que personas mayores y principiantes aprendan a usar la computadora con calma, seguridad y confianza.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
