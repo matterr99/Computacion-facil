@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ArrowLeft, ArrowRight, Home, CheckCircle2, RotateCcw } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Home, CheckCircle2 } from 'lucide-react';
 import { MODULES } from '../data/modulesData';
 import { ModuleProgress } from '../types';
 import { ProgressBar } from './common/ProgressBar';
@@ -31,7 +31,7 @@ export const LessonHost: React.FC<Props> = ({
   onStepCompleted,
   onNavigateToModule
 }) => {
-  const { playClickSound, theme } = useAccessibility();
+  const { playClickSound, playSuccessSound, theme } = useAccessibility();
   const isDark = theme === 'dark';
 
   const currentModule = MODULES.find(m => m.id === moduleId) || MODULES[0];
@@ -61,13 +61,6 @@ export const LessonHost: React.FC<Props> = ({
         isModuleCompleted: true
       });
       setShowSuccessModal(true);
-    } else {
-      setModalData({
-        title: '¡Paso completado con éxito!',
-        message: `Has terminado el paso ${activeStepIndex + 1}: "${currentModule.steps[activeStepIndex].title}".`,
-        isModuleCompleted: false
-      });
-      setShowSuccessModal(true);
     }
   };
 
@@ -80,10 +73,6 @@ export const LessonHost: React.FC<Props> = ({
         setActiveStepIndex(0);
       } else {
         onBackToHome();
-      }
-    } else {
-      if (activeStepIndex < currentModule.steps.length - 1) {
-        setActiveStepIndex(prev => prev + 1);
       }
     }
   };
@@ -99,6 +88,15 @@ export const LessonHost: React.FC<Props> = ({
     playClickSound();
     if (activeStepIndex < currentModule.steps.length - 1) {
       setActiveStepIndex(prev => prev + 1);
+    } else if (isCurrentStepDone) {
+      // Last step completed
+      onCompleteModule(currentModule.id);
+      setModalData({
+        title: `¡Felicidades, papá! Has completado el Módulo ${currentModule.number}`,
+        message: `Has aprendido todas las lecciones de "${currentModule.title}". ¡Estás haciendo un progreso extraordinario!`,
+        isModuleCompleted: true
+      });
+      setShowSuccessModal(true);
     }
   };
 
@@ -197,7 +195,27 @@ export const LessonHost: React.FC<Props> = ({
         )}
       </div>
 
-      {/* Bottom Step Navigation Control Bar - Responsive Layout */}
+      {/* In-Place Completion Status Banner */}
+      {isCurrentStepDone && (
+        <div className="p-3.5 sm:p-4 rounded-2xl bg-emerald-500/15 border-2 border-emerald-500 text-emerald-950 dark:text-emerald-200 flex flex-col sm:flex-row items-center justify-between gap-3 animate-in fade-in">
+          <div className="flex items-center gap-2.5">
+            <CheckCircle2 className="w-6 h-6 text-emerald-600 dark:text-emerald-400 flex-shrink-0" />
+            <span className="font-bold text-sm sm:text-base">
+              ¡Paso completado con éxito, papá! Puedes seguir practicando aquí o avanzar al siguiente paso.
+            </span>
+          </div>
+          {activeStepIndex < currentModule.steps.length - 1 && (
+            <button
+              onClick={handleGoNextStep}
+              className="w-full sm:w-auto px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-sm rounded-xl transition-all cursor-pointer shadow-sm active:scale-95 whitespace-nowrap"
+            >
+              Avanzar al Paso {activeStepIndex + 2} →
+            </button>
+          )}
+        </div>
+      )}
+
+      {/* Bottom Step Navigation Control Bar */}
       <div className={`p-3.5 sm:p-5 rounded-2xl sm:rounded-3xl border-2 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-3 mt-6 transition-colors ${
         isDark ? 'bg-slate-900 border-slate-700 text-slate-100' : 'bg-white border-slate-200 text-slate-900'
       }`}>
@@ -222,25 +240,27 @@ export const LessonHost: React.FC<Props> = ({
 
         <button
           onClick={handleGoNextStep}
-          disabled={activeStepIndex === currentModule.steps.length - 1}
+          disabled={activeStepIndex === currentModule.steps.length - 1 && !isCurrentStepDone}
           className={`w-full sm:w-auto px-6 sm:px-8 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl font-black text-sm sm:text-lg flex items-center justify-center gap-2 transition-all cursor-pointer shadow-md ${
             activeStepIndex < currentModule.steps.length - 1
               ? 'bg-blue-600 hover:bg-blue-700 text-white active:scale-95'
+              : isCurrentStepDone
+              ? 'bg-emerald-600 hover:bg-emerald-700 text-white active:scale-95'
               : 'bg-slate-100 text-slate-400 border-slate-200 cursor-not-allowed opacity-50'
           }`}
         >
-          <span>Siguiente Paso</span>
+          <span>{activeStepIndex === currentModule.steps.length - 1 ? 'Terminar Módulo' : 'Siguiente Paso'}</span>
           <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 stroke-[3]" />
         </button>
       </div>
 
-      {/* Celebration Modal */}
+      {/* Celebration Modal ONLY on Module completion */}
       <SuccessModal
         isOpen={showSuccessModal}
         title={modalData.title}
         message={modalData.message}
         isModuleCompleted={modalData.isModuleCompleted}
-        nextStepLabel={modalData.isModuleCompleted ? 'Continuar al siguiente tema' : 'Ir al siguiente paso'}
+        nextStepLabel="Continuar al siguiente tema"
         onNext={handleModalNext}
       />
     </div>

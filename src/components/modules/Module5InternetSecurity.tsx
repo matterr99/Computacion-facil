@@ -11,8 +11,7 @@ import {
   Sparkles, 
   Printer, 
   AlertTriangle,
-  Lock,
-  Check
+  RotateCcw
 } from 'lucide-react';
 import { useAccessibility } from '../../context/AccessibilityContext';
 import { StepItem, SecurityQuizCase } from '../../types';
@@ -41,7 +40,7 @@ export const Module5InternetSecurity: React.FC<Props> = ({
   const [userAnswer, setUserAnswer] = useState<'safe' | 'scam' | null>(null);
   const [showExplanation, setShowExplanation] = useState(false);
   const [inspectedSender, setInspectedSender] = useState(false);
-  const [completedCases, setCompletedCases] = useState<number[]>([]);
+  const [correctlySolvedCases, setCorrectlySolvedCases] = useState<number[]>([]);
 
   // Step 3 Pop-up closer state
   const [isPopupVisible, setIsPopupVisible] = useState(true);
@@ -58,17 +57,22 @@ export const Module5InternetSecurity: React.FC<Props> = ({
 
     if (isCorrect) {
       playSuccessSound();
+      if (!correctlySolvedCases.includes(currentCaseIndex)) {
+        const updated = [...correctlySolvedCases, currentCaseIndex];
+        setCorrectlySolvedCases(updated);
+        if (updated.length >= SECURITY_QUIZ_CASES.length) {
+          onCompleteStep();
+        }
+      }
     } else {
       playErrorSound();
     }
+  };
 
-    if (!completedCases.includes(currentCaseIndex)) {
-      const updated = [...completedCases, currentCaseIndex];
-      setCompletedCases(updated);
-      if (updated.length >= SECURITY_QUIZ_CASES.length) {
-        onCompleteStep();
-      }
-    }
+  const handleRetryCurrentCase = () => {
+    playClickSound();
+    setUserAnswer(null);
+    setShowExplanation(false);
   };
 
   const handleNextCase = () => {
@@ -93,6 +97,9 @@ export const Module5InternetSecurity: React.FC<Props> = ({
     setPopupSuccess(true);
     onCompleteStep();
   };
+
+  const isCurrentAnswerCorrect = userAnswer !== null && 
+    ((userAnswer === 'scam' && activeCase.isScam) || (userAnswer === 'safe' && !activeCase.isScam));
 
   return (
     <div className="space-y-6">
@@ -188,18 +195,18 @@ export const Module5InternetSecurity: React.FC<Props> = ({
           <div className="max-w-3xl mx-auto space-y-6 py-2">
             
             {/* Quiz Progress header */}
-            <div className="flex items-center justify-between bg-slate-100 p-4 rounded-2xl border-2 border-slate-200">
+            <div className="flex items-center justify-between bg-slate-100 dark:bg-slate-800 p-4 rounded-2xl border-2 border-slate-200 dark:border-slate-700">
               <div className="flex items-center gap-2">
-                <span className="font-bold text-slate-700">Caso {currentCaseIndex + 1} de {SECURITY_QUIZ_CASES.length}:</span>
-                <span className="font-extrabold text-blue-900">{activeCase.scenarioTitle}</span>
+                <span className="font-bold text-slate-700 dark:text-slate-300">Caso {currentCaseIndex + 1} de {SECURITY_QUIZ_CASES.length}:</span>
+                <span className="font-extrabold text-blue-900 dark:text-blue-300">{activeCase.scenarioTitle}</span>
               </div>
-              <span className="text-xs font-bold bg-amber-100 text-amber-900 px-3 py-1 rounded-full">
-                {completedCases.length} de {SECURITY_QUIZ_CASES.length} resueltos
+              <span className="text-xs font-bold bg-amber-100 text-amber-900 dark:bg-amber-950/60 dark:text-amber-300 px-3 py-1 rounded-full border border-amber-300 dark:border-amber-700">
+                {correctlySolvedCases.length} de {SECURITY_QUIZ_CASES.length} acertados
               </span>
             </div>
 
             {/* Email scenario to analyze */}
-            <div className="bg-white rounded-3xl border-3 border-slate-300 shadow-xl overflow-hidden">
+            <div className="bg-white dark:bg-slate-900 rounded-3xl border-3 border-slate-300 dark:border-slate-700 shadow-xl overflow-hidden">
               <div className="bg-slate-800 text-white p-5 space-y-2">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                   <div>
@@ -235,19 +242,19 @@ export const Module5InternetSecurity: React.FC<Props> = ({
               </div>
 
               {/* Message content */}
-              <div className="p-6 sm:p-8 space-y-4 bg-slate-50">
-                <p className="text-slate-800 text-lg font-medium leading-relaxed whitespace-pre-line bg-white p-5 rounded-2xl border border-slate-200">
+              <div className="p-6 sm:p-8 space-y-4 bg-slate-50 dark:bg-slate-850">
+                <p className="text-slate-800 dark:text-slate-200 text-lg font-medium leading-relaxed whitespace-pre-line bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700">
                   {activeCase.body}
                 </p>
 
-                <div className="p-3 bg-amber-50 rounded-xl border border-amber-300 text-amber-950 text-sm font-semibold">
+                <div className="p-3 bg-amber-50 dark:bg-amber-950/40 rounded-xl border border-amber-300 dark:border-amber-700 text-amber-950 dark:text-amber-200 text-sm font-semibold">
                   <strong>Petición del mensaje:</strong> {activeCase.actionText}
                 </div>
               </div>
 
               {/* Decision Action Buttons */}
               {!showExplanation ? (
-                <div className="p-6 bg-white border-t-2 border-slate-200 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="p-6 bg-white dark:bg-slate-900 border-t-2 border-slate-200 dark:border-slate-700 grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <button
                     onClick={() => handleAnswer('safe')}
                     className="py-4 px-6 bg-emerald-600 hover:bg-emerald-700 text-white rounded-2xl font-black text-xl flex items-center justify-center gap-3 cursor-pointer shadow-lg active:scale-95"
@@ -265,40 +272,56 @@ export const Module5InternetSecurity: React.FC<Props> = ({
                   </button>
                 </div>
               ) : (
-                <div className="p-6 bg-white border-t-2 border-slate-200 space-y-4 animate-in fade-in">
+                <div className="p-6 bg-white dark:bg-slate-900 border-t-2 border-slate-200 dark:border-slate-700 space-y-4 animate-in fade-in">
                   <div className={`p-5 rounded-2xl border-3 flex items-start gap-4 ${
-                    (userAnswer === 'scam' && activeCase.isScam) || (userAnswer === 'safe' && !activeCase.isScam)
-                      ? 'bg-emerald-50 border-emerald-400 text-emerald-950'
-                      : 'bg-amber-50 border-amber-400 text-amber-950'
+                    isCurrentAnswerCorrect
+                      ? 'bg-emerald-50 dark:bg-emerald-950/40 border-emerald-400 text-emerald-950 dark:text-emerald-200'
+                      : 'bg-rose-50 dark:bg-rose-950/40 border-rose-400 text-rose-950 dark:text-rose-200'
                   }`}>
-                    {activeCase.isScam ? (
-                      <ShieldAlert className="w-8 h-8 text-rose-600 flex-shrink-0" />
+                    {isCurrentAnswerCorrect ? (
+                      <CheckCircle2 className="w-8 h-8 text-emerald-600 dark:text-emerald-400 flex-shrink-0" />
                     ) : (
-                      <CheckCircle2 className="w-8 h-8 text-emerald-600 flex-shrink-0" />
+                      <AlertTriangle className="w-8 h-8 text-rose-600 dark:text-rose-400 flex-shrink-0" />
                     )}
                     <div className="space-y-2">
                       <h5 className="text-xl font-black">
-                        {activeCase.isScam ? '¡Correcto! Es un intento de engaño.' : '¡Correcto! Es un correo legítimo.'}
+                        {isCurrentAnswerCorrect 
+                          ? (activeCase.isScam ? '¡Excelente detective! Detectaste la trampa correctamente.' : '¡Muy bien! Identificaste que es un mensaje seguro.') 
+                          : '¡Cuidado, papá! La respuesta correcta era la contraria:'}
                       </h5>
                       <p className="text-base font-medium">{activeCase.explanationWhy}</p>
-                      <p className="text-sm font-bold bg-white/70 p-3 rounded-xl border border-current">
+                      <p className="text-sm font-bold bg-white/70 dark:bg-slate-800/80 p-3 rounded-xl border border-current">
                         {activeCase.goldenRule}
                       </p>
                     </div>
                   </div>
 
-                  {currentCaseIndex < SECURITY_QUIZ_CASES.length - 1 ? (
-                    <button
-                      onClick={handleNextCase}
-                      className="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white font-black text-xl rounded-2xl shadow-md cursor-pointer transition-all active:scale-95"
-                    >
-                      Analizar el siguiente caso →
-                    </button>
-                  ) : (
-                    <div className="p-4 bg-emerald-100 rounded-2xl text-center text-emerald-950 font-bold text-lg">
-                      🎉 ¡Has completado todos los casos del inspector de seguridad!
-                    </div>
-                  )}
+                  <div className="flex flex-col sm:flex-row gap-3">
+                    {!isCurrentAnswerCorrect && (
+                      <button
+                        onClick={handleRetryCurrentCase}
+                        className="py-3 px-5 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-base rounded-xl flex items-center justify-center gap-2 cursor-pointer"
+                      >
+                        <RotateCcw className="w-4 h-4" />
+                        <span>Reintentar este caso</span>
+                      </button>
+                    )}
+
+                    {currentCaseIndex < SECURITY_QUIZ_CASES.length - 1 ? (
+                      <button
+                        onClick={handleNextCase}
+                        className="flex-1 py-4 bg-blue-600 hover:bg-blue-700 text-white font-black text-xl rounded-2xl shadow-md cursor-pointer transition-all active:scale-95"
+                      >
+                        Analizar el siguiente caso →
+                      </button>
+                    ) : (
+                      <div className="flex-1 p-4 bg-emerald-100 dark:bg-emerald-950/60 rounded-2xl text-center text-emerald-950 dark:text-emerald-200 font-bold text-lg">
+                        {correctlySolvedCases.length >= SECURITY_QUIZ_CASES.length 
+                          ? '🎉 ¡Has acertado todos los casos del detective!' 
+                          : 'Has revisado todos los casos. Puedes reintentar los que quieras o continuar.'}
+                      </div>
+                    )}
+                  </div>
                 </div>
               )}
             </div>
@@ -308,7 +331,7 @@ export const Module5InternetSecurity: React.FC<Props> = ({
         {/* STEP 3: Windows Pop-up closer practice */}
         {step.componentKey === 'security-popup-closer-practice' && (
           <div className="max-w-2xl mx-auto space-y-6 text-center py-2">
-            <div className="inline-flex items-center gap-2 bg-slate-100 px-5 py-2.5 rounded-2xl border-2 border-indigo-200 text-slate-800 font-bold text-lg shadow-xs">
+            <div className="inline-flex items-center gap-2 bg-slate-100 dark:bg-slate-800 px-5 py-2.5 rounded-2xl border-2 border-indigo-200 dark:border-indigo-700 text-slate-800 dark:text-slate-200 font-bold text-lg shadow-xs">
               <span>{step.instructionPrompt}</span>
             </div>
 
@@ -346,21 +369,21 @@ export const Module5InternetSecurity: React.FC<Props> = ({
 
                   <button
                     onClick={handleFakeButtonClick}
-                    className="w-full py-3 bg-white/20 hover:bg-white/30 text-white font-bold text-sm rounded-xl"
+                    className="w-full py-3 bg-white/20 hover:bg-white/30 text-white font-bold text-sm rounded-xl cursor-pointer"
                   >
                     Descargar antivirus gratis (¡Tampoco aquí!)
                   </button>
                 </div>
 
                 {popupAttempts > 0 && (
-                  <p className="mt-4 p-2 bg-white text-rose-900 rounded-xl font-bold text-sm">
-                    💡 ¡Cuidado! Esos botones de colores son falsos. Busca la <strong>X blanca</strong> arriba a la derecha.
+                  <p className="mt-4 p-3 bg-white text-rose-900 rounded-xl font-bold text-sm animate-bounce">
+                    💡 ¡Cuidado! Esos botones de colores son trampas. Busca la <strong>X blanca</strong> arriba a la derecha.
                   </p>
                 )}
               </div>
             ) : (
-              <div className="bg-emerald-100 border-3 border-emerald-400 p-8 rounded-3xl text-emerald-950 max-w-lg mx-auto animate-in zoom-in-95 space-y-3">
-                <CheckCircle2 className="w-16 h-16 text-emerald-600 mx-auto" />
+              <div className="bg-emerald-100 dark:bg-emerald-950/60 border-3 border-emerald-400 p-8 rounded-3xl text-emerald-950 dark:text-emerald-200 max-w-lg mx-auto animate-in zoom-in-95 space-y-3">
+                <CheckCircle2 className="w-16 h-16 text-emerald-600 dark:text-emerald-400 mx-auto" />
                 <h4 className="text-2xl font-black">
                   ¡Excelente maniobra!
                 </h4>
@@ -369,7 +392,7 @@ export const Module5InternetSecurity: React.FC<Props> = ({
                 </p>
                 <button
                   onClick={() => setIsPopupVisible(true)}
-                  className="text-xs font-bold text-slate-600 hover:underline cursor-pointer"
+                  className="text-xs font-bold text-slate-600 dark:text-slate-400 hover:underline cursor-pointer"
                 >
                   Probar a cerrar de nuevo
                 </button>
@@ -381,12 +404,12 @@ export const Module5InternetSecurity: React.FC<Props> = ({
         {/* STEP 4: Safety Checklist Summary */}
         {step.componentKey === 'security-checklist-summary' && (
           <div className="max-w-3xl mx-auto space-y-6 py-2">
-            <div className="bg-white p-6 sm:p-8 rounded-3xl border-3 border-emerald-300 shadow-xl space-y-6">
-              <div className="flex items-center justify-between border-b-2 border-slate-100 pb-4">
+            <div className="bg-white dark:bg-slate-900 p-6 sm:p-8 rounded-3xl border-3 border-emerald-300 dark:border-emerald-700 shadow-xl space-y-6">
+              <div className="flex items-center justify-between border-b-2 border-slate-100 dark:border-slate-800 pb-4">
                 <div className="flex items-center gap-3">
-                  <ShieldCheck className="w-10 h-10 text-emerald-600" />
+                  <ShieldCheck className="w-10 h-10 text-emerald-600 dark:text-emerald-400" />
                   <div>
-                    <h4 className="text-2xl font-black text-slate-900">
+                    <h4 className="text-2xl font-black text-slate-900 dark:text-white">
                       Decálogo de Seguridad para Papá
                     </h4>
                     <p className="text-slate-500 text-sm">Las 6 reglas de oro para tener siempre a mano</p>
@@ -407,14 +430,14 @@ export const Module5InternetSecurity: React.FC<Props> = ({
                 {SAFETY_CHECKLIST.map((item, idx) => (
                   <div
                     key={idx}
-                    className="p-4 rounded-2xl bg-slate-50 border-2 border-slate-200 text-slate-800 text-base sm:text-lg font-bold flex items-start gap-3"
+                    className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 text-base sm:text-lg font-bold flex items-start gap-3"
                   >
                     <span>{item}</span>
                   </div>
                 ))}
               </div>
 
-              <div className="p-4 bg-emerald-50 rounded-2xl border-2 border-emerald-300 text-emerald-950 text-center font-bold text-lg">
+              <div className="p-4 bg-emerald-50 dark:bg-emerald-950/40 rounded-2xl border-2 border-emerald-300 dark:border-emerald-700 text-emerald-950 dark:text-emerald-200 text-center font-bold text-lg">
                 🎉 ¡Has completado todas las lecciones de seguridad digital en Windows!
               </div>
             </div>
